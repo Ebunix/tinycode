@@ -16,12 +16,12 @@ dw 0x0001			; Section count
 dd 0x00000000		; Timestamp
 dd 0x00000000		; Symbol table ptr
 dd 0x00000000		; Symbol count
-dw 0x00E0			; Optional header Size
-dw 0x0103			; Caracteristics
+dw 0x00E0		; Optional header Size
+dw 0x0103		; Caracteristics
 
 ; PE Optional Header
-dw 0x010B			; Magic (PE32)
-dw 0x0000			; Linker Version
+dw 0x010B		; Magic (PE32)
+dw 0x0000		; Linker Version
 ImageSize: dd 0x00FFFFFF ; Size of code
 dd 0x00000000		; Size of InitData
 dd 0x00000000		; Size of UnInitData
@@ -38,8 +38,8 @@ dd 0x00000000		; Win32 version
 dd 0x02000000		; Image size
 dd 0x00001000		; Total header size
 dd 0x00000000		; Checksum
-dw 0x0002			; Subsystem (GUI)
-dw 0x0000			; DLL characteristics
+dw 0x0002		; Subsystem (GUI)
+dw 0x0000		; DLL characteristics
 dd 0x00100000		; Stack reserve
 dd 0x00001000		; Stack commit
 dd 0x00100000		; Heap reserve
@@ -52,16 +52,16 @@ dd __idata - BASE, __idata_end - __idata	; Imports
 times 14 dd 0, 0
 
 ; Main Section
-db 'SECTNAME'		    ; Section name
-dd 0x00FFFFFF		    ; Virtual size
-dd 0x00001000		    ; Virtual address
+db 'SECTNAME'		; Section name
+dd 0x00FFFFFF		; Virtual size
+dd 0x00001000		; Virtual address
 dd __end - __sect_start	; Raw size 
-dd 0x00001000		    ; Raw address
-dd 0x00000000		    ; Reloc address
-dd 0x00000000		    ; Linenumbers
-dw 0x0000			    ; Reloc address count
-dw 0x0000			    ; Linenumbers count
-dd 0xe0000060		    ; Characteristics
+dd 0x00001000		; Raw address
+dd 0x00000000		; Reloc address
+dd 0x00000000		; Linenumbers
+dw 0x0000		; Reloc address count
+dw 0x0000		; Linenumbers count
+dd 0xe0000060		; Characteristics
 
 ; Compressed data
 __data: incbin 'data.bin',0,3796
@@ -73,11 +73,11 @@ __datasize: dd __datasize - __data
 %include 'main.asm'
 
 __idata:
-dd __thunk - BASE		; Characteristics
-dd 0x00000000			; Timestamp
-dd 0x00000000			; Forwarder chain
+dd __thunk - BASE	; Characteristics
+dd 0x00000000		; Timestamp
+dd 0x00000000		; Forwarder chain
 dd __kernel32 - BASE	; Import name
-dd __thunk - BASE		; First thunk
+dd __thunk - BASE	; First thunk
 
 times 20 db 0
 __idata_end:

