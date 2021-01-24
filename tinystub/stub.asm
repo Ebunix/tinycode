@@ -10,9 +10,9 @@ db 'MZ'
 db 'EBUNIXLMAO'
 
 ; PE File Header
-db 'PE',0,0			; PE signature
-dw 0x014C			; Machine (i386)
-dw 0x0001			; Section count
+db 'PE',0,0		; PE signature
+dw 0x014C		; Machine (i386)
+dw 0x0001		; Section count
 dd 0x00000000		; Timestamp
 dd 0x00000000		; Symbol table ptr
 dd 0x00000000		; Symbol count
@@ -28,7 +28,7 @@ dd 0x00000000		; Size of UnInitData
 dd _main - BASE		; Address of entry point
 dd 0x00001000		; Base of code
 dd 0x0000000C		; Base of data (Overlapped with PE eader offset from DOS header)
-dd BASE				; Image base address
+dd BASE			; Image base address
 dd 0x00001000		; Section alignment
 dd 0x00000200		; File alignment
 dd 0x00000006		; OS version
