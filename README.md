@@ -17,3 +17,10 @@ This will only produce a PE exe file. There is no proper way to compile binaries
   - The function import code is massive (~50% of the stub). Make that bullshit smaller somehow!
 - Filename
   - The filename is fixed for the time being and needs to be set at compile time (see the `stub.asm` header). You can changethe target filename there, but once you compiled the program you can't rename the exe file. Renaming it will prevent the program from working at all and nothing will happen.
+
+### Code size
+An overview of the size of the generated code section. This does not include the contained data and only the code that is needed to unpack it.
+- 24/01/21 `0x326 byte (-96)`
+  - Made data copy use `lodsd` and `stosb` fpr moving data around, which makes overall size a bit smaller. Applied the same to external function loading, the storage location for addresses isn't hardcoded but instead moved along gradualy. Function addresses are stored with `stosd` instead of a `mov` to memory.
+- 23/01/21 `0x386 byte (±0)`
+  - Initial crude version, a pretty rough implementation
