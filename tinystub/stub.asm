@@ -1,5 +1,6 @@
 %define BASE 0x00400000
 %define APPNAME 'stub.exe'
+%define BINDATA 'data.bin'
 
 [BITS 32]
 [ORG BASE]
@@ -64,9 +65,9 @@ dw 0x0000		; Linenumbers count
 dd 0xe0000060		; Characteristics
 
 ; Compressed data
-__data: incbin 'data.bin',0,3796
+__data: incbin BINDATA,0,3796
 __sect_start:
-incbin 'data.bin',3796
+incbin BINDATA,3796
 
 __datasize: dd __datasize - __data
 
